@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LooseControlVideo Supplementary Material</title>
+    <meta
+      name="description"
+      content="Supplementary material for LooseControlVideo: Directorial Video Control using Spatial Blocking."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,700&family=Source+Sans+3:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="paper-header">
+        <h1 class="paper-title">
+          <span class="paper-title-main">LooseControlVideo</span>
+          <span class="paper-title-sub">Directorial Video Control using Spatial Blocking</span>
+        </h1>
+        <p class="paper-meta">
+          <a href="https://scholar.google.com/citations?user=nGbEcI8AAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Shariq Farooq Bhat</a>,
+          <a href="https://scholar.google.com/citations?user=dPrZJWMAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Niloy Mitra</a>,
+          <a href="https://scholar.google.com/citations?user=j7uL6VEAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Kalyan Sunkavalli</a>
+        </p>
+        <p class="paper-meta">Adobe Research</p>
+      </header>
+
+      <section class="section" id="teaser">
+        <div class="scene-block">
+          <div class="video-grid cols-2">
+            <div class="video-item">
+              <p class="video-label">Input condition</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreGenerationExamples/train/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreGenerationExamples/train/predicted.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="video-grid cols-3">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/swan-rotate/original.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Input condition</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/swan-rotate/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/swan-rotate/predicted.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <p class="teaser-caption">
+          LooseControlVideo lets users direct trajectories, rotations, occlusion, camera motion, and
+          localized edits using sparse oriented 3D boxes.
+        </p>
+      </section>
+
+      <section class="section" id="abstract">
+        <details class="abstract-block">
+          <summary class="abstract-title">Abstract</summary>
+          <p class="abstract-text">
+            Precise 3D spatial orchestration in text-to-video generation remains a significant challenge,
+            particularly for multi-object scenes where semantic layout and temporal dynamics are often
+            entangled. While existing depth-conditioned models achieve good structural fidelity, they
+            necessitate dense, frame-accurate guidance that is labor-intensive to author for dynamic
+            events involving deformable objects. We present LooseControlVideo (LCV), a framework that
+            enables intuitive and expressive control by using sparse, oriented 3D boxes as a blocking
+            proxy. This allows users to author high-level layout and trajectory while leveraging a video
+            generative model to generate realistic occlusions, dynamics and interactions. We achieve this
+            by fine-tuning a Wan 2.2 backbone on a video dataset annotated with DNOCS, a novel encoding
+            for 3D size, orientation and depth-ordered occlusions. Furthermore, our method allows for
+            localized refinement, such as adjusting a jump trajectory or adding an interaction, with
+            minimal disruption to the global scene context. Extensive evaluations on the nuScenes, HO-3D,
+            and BEHAVE benchmarks demonstrate that LCV significantly outperforms existing 2D-box and
+            flow-based baselines. Our findings indicate a 1.2-3x improvement in Trajectory Error, 2x
+            improvement in Rigid Motion Consistency, and a 1.5-2x increase in Occlusion Accuracy over
+            current state-of-the-art layout-conditioned models, demonstrating that oriented 3D primitives
+            provide good geometric prior for complex, multi-agent video authoring.
+          </p>
+        </details>
+      </section>
+
+      <section class="section" id="spatial-control">
+        <h2 class="section-title">Control Video Objects in 3D Space</h2>
+        <p class="section-text">LCV gives precise control over object motion in 3D, including trajectories and rotations.</p>
+
+        <div class="split-layout">
+          <div class="split-left">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/comp_living-room-dance/original.mp4"></video>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <div class="video-grid cols-2">
+              <div class="video-item">
+                <p class="video-label">Input boxes</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/comp_living-room-dance/context.mp4"></video>
+              </div>
+              <div class="video-item">
+                <p class="video-label">Loose Control Video</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/comp_living-room-dance/predicted_ours.mp4"></video>
+              </div>
+            </div>
+
+            <div class="video-grid cols-2">
+              <div class="video-item">
+                <p class="video-label">Input boxes</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/living-room-dance-2/scene-video.mp4"></video>
+              </div>
+              <div class="video-item">
+                <p class="video-label">Loose Control Video</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/living-room-dance-2/predicted.mp4"></video>
+              </div>
+            </div>
+
+            <div class="video-grid cols-2">
+              <div class="video-item">
+                <p class="video-label">Input boxes</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/living-room-dance-3/scene-video.mp4"></video>
+              </div>
+              <div class="video-item">
+                <p class="video-label">Loose Control Video</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/living-room-dance-3/predicted.mp4"></video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="scene-block">
+          <div class="video-grid cols-3">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/car-drift/original.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/car-drift/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/car-drift/predicted_ours.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="video-grid cols-3">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/soccer-ball/original.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/soccer-ball/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/soccer-ball/predicted_ours.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+
+        
+        <div class="scene-block">
+          <p class="section-text">and interactions...</p>
+          <div class="video-grid cols-2">
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/comparison_eagle/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/comparison_eagle/predicted_ours.mp4"></video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="interactions">
+        <h2 class="section-title">Add Objects and Make Them Interact with Video Objects</h2>
+
+        <div class="scene-block">
+          <div class="video-grid cols-3">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/dog-park/original.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/dog-park/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/dog-park/predicted_ours.mp4"></video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="occlusion">
+        <h2 class="section-title">Handles Occlusion</h2>
+
+        <div class="scene-block">
+          <div class="video-grid cols-2">
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/pillar_cats/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/pillar_cats/predicted_ours.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="video-grid cols-2">
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreGenerationExamples/ours_cat_behind_pillar/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreGenerationExamples/ours_cat_behind_pillar/predicted.mp4"></video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="rotations">
+        <h2 class="section-title">Rotations</h2>
+
+        <div class="scene-block">
+          <div class="video-grid cols-3">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/swan-rotate/original.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/swan-rotate/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/swan-rotate/predicted.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="video-grid cols-2">
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreGenerationExamples/two_puppies/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreGenerationExamples/two_puppies/predicted.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="video-grid cols-2">
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/person_about_turn/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/person_about_turn/predicted_ours.mp4"></video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="camera">
+        <h2 class="section-title">Control Camera</h2>
+
+        <div class="scene-block">
+          <div class="video-grid cols-2">
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/car_weave/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/car_weave/predicted_ours.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="video-grid cols-3">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-cam-result1/original.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-cam-result1/scene-video.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-cam-result1/predicted.mp4"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="video-grid cols-3">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-cam-result1/original.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Input boxes</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-cam-result2/context.mp4"></video>
+            </div>
+            <div class="video-item">
+              <p class="video-label">Loose Control Video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-cam-result2/predicted.mp4"></video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="parts">
+        <h2 class="section-title">Boxes as Parts</h2>
+
+        <div class="split-layout">
+          <div class="split-left">
+            <div class="video-item">
+              <p class="video-label">Original video</p>
+              <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-cam-result1/original.mp4"></video>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <div class="video-grid cols-2">
+              <div class="video-item">
+                <p class="video-label">Input boxes</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-split-result/scene-video.mp4"></video>
+              </div>
+              <div class="video-item">
+                <p class="video-label">Loose Control Video</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-split-result/predicted.mp4"></video>
+              </div>
+            </div>
+
+            <div class="video-grid cols-2">
+              <div class="video-item">
+                <p class="video-label">Input boxes</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-split-2-result/scene-video.mp4"></video>
+              </div>
+              <div class="video-item">
+                <p class="video-label">Loose Control Video</p>
+                <video autoplay muted loop playsinline preload="metadata" src="content/MoreEditingExamples/car-split-2-result/predicted.mp4"></video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="comparisons">
+        <h2 class="section-title">Comparisons with Baselines</h2>
+
+        <div class="scene-block">
+          <h3 class="scene-title">Generation</h3>
+
+          <div data-carousel>
+            <div class="carousel-header">
+              <div></div>
+              <div class="carousel-controls">
+                <button class="carousel-button" type="button" data-carousel-prev>Prev</button>
+                <div class="carousel-dots" data-carousel-dots></div>
+                <button class="carousel-button" type="button" data-carousel-next>Next</button>
+              </div>
+            </div>
+
+            <div class="carousel-viewport">
+              <div class="carousel-track" data-carousel-track>
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-3">
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/car_weave/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Generation/car_weave/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/car_weave/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/car_weave/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/car_weave/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/car_weave/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-3">
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/comparison_eagle/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Generation/comparison_eagle/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/comparison_eagle/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/comparison_eagle/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/comparison_eagle/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/comparison_eagle/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-3">
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/person_about_turn/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Generation/person_about_turn/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/person_about_turn/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/person_about_turn/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/person_about_turn/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/person_about_turn/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-3">
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/pillar_cats/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Generation/pillar_cats/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/pillar_cats/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Generation/pillar_cats/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/pillar_cats/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Generation/pillar_cats/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <h3 class="scene-title">Editing</h3>
+
+          <div data-carousel>
+            <div class="carousel-header">
+              <div></div>
+              <div class="carousel-controls">
+                <button class="carousel-button" type="button" data-carousel-prev>Prev</button>
+                <div class="carousel-dots" data-carousel-dots></div>
+                <button class="carousel-button" type="button" data-carousel-next>Next</button>
+              </div>
+            </div>
+
+            <div class="carousel-viewport">
+              <div class="carousel-track" data-carousel-track>
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-4">
+                      <div class="video-item">
+                        <p class="video-label">Original video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/car-drift/original.mp4"></video>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/car-drift/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Editing/car-drift/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/car-drift/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/car-drift/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/car-drift/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/car-drift/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-4">
+                      <div class="video-item">
+                        <p class="video-label">Original video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/comp_living-room-dance/original.mp4"></video>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/comp_living-room-dance/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Editing/comp_living-room-dance/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/comp_living-room-dance/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/comp_living-room-dance/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/comp_living-room-dance/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/comp_living-room-dance/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-4">
+                      <div class="video-item">
+                        <p class="video-label">Original video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/dog-park/original.mp4"></video>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/dog-park/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Editing/dog-park/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/dog-park/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/dog-park/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/dog-park/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/dog-park/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carousel-slide">
+                  <div class="scene-block">
+                    <div class="video-grid cols-4">
+                      <div class="video-item">
+                        <p class="video-label">Original video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/soccer-ball/original.mp4"></video>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Input boxes</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/soccer-ball/context.mp4"></video>
+                      </div>
+
+                      <div class="baseline-shell" data-baseline-group>
+                        <p class="video-label">Baseline</p>
+                        <div class="baseline-tabs">
+                          <button class="baseline-tab is-active" type="button" data-baseline-src="content/Comparisons/Editing/soccer-ball/predicted_bbox2d.mp4">2D box</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/soccer-ball/predicted_depth_only.mp4">Depth Only</button>
+                          <button class="baseline-tab" type="button" data-baseline-src="content/Comparisons/Editing/soccer-ball/predicted_flow.mp4">Flow</button>
+                        </div>
+                        <div class="video-item">
+                          <video data-baseline-video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/soccer-ball/predicted_bbox2d.mp4"></video>
+                        </div>
+                      </div>
+
+                      <div class="video-item">
+                        <p class="video-label">Loose Control Video</p>
+                        <video autoplay muted loop playsinline preload="metadata" src="content/Comparisons/Editing/soccer-ball/predicted_ours.mp4"></video>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="user-study">
+        <h2 class="section-title">User Study Preference Matrix</h2>
+        <p class="section-text">
+          Each entry shows the share of preferences for the row method over the column method across
+          completed sessions.
+        </p>
+
+        <div class="matrix-block">
+          <h3 class="scene-title">Overall</h3>
+          <div class="matrix-wrap">
+            <table class="preference-matrix">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>LCV (Ours)</th>
+                  <th>Depth Only</th>
+                  <th>Optical Flow</th>
+                  <th>2D Bounding Boxes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>LCV (Ours)</th>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.78">78.1%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.88">87.5%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.92">92.2%</td>
+                </tr>
+                <tr>
+                  <th>Depth Only</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.22">21.9%</td>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-mid" style="--matrix-alpha: 0.66">65.6%</td>
+                  <td class="matrix-cell matrix-mid" style="--matrix-alpha: 0.75">75.0%</td>
+                </tr>
+                <tr>
+                  <th>Optical Flow</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.13">12.5%</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.34">34.4%</td>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-neutral" style="--matrix-alpha: 0.50">50.0%</td>
+                </tr>
+                <tr>
+                  <th>2D Bounding Boxes</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.08">7.8%</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.25">25.0%</td>
+                  <td class="matrix-cell matrix-neutral" style="--matrix-alpha: 0.50">50.0%</td>
+                  <td class="matrix-diagonal">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="matrix-block">
+          <h3 class="scene-title">Editing</h3>
+          <div class="matrix-wrap">
+            <table class="preference-matrix">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>LCV (Ours)</th>
+                  <th>Depth Only</th>
+                  <th>Optical Flow</th>
+                  <th>2D Bounding Boxes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>LCV (Ours)</th>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.84">84.4%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.91">90.6%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.84">84.4%</td>
+                </tr>
+                <tr>
+                  <th>Depth Only</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.16">15.6%</td>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.91">90.6%</td>
+                  <td class="matrix-cell matrix-mid" style="--matrix-alpha: 0.59">59.4%</td>
+                </tr>
+                <tr>
+                  <th>Optical Flow</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.09">9.4%</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.09">9.4%</td>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.13">12.5%</td>
+                </tr>
+                <tr>
+                  <th>2D Bounding Boxes</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.16">15.6%</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.41">40.6%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.88">87.5%</td>
+                  <td class="matrix-diagonal">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="matrix-block">
+          <h3 class="scene-title">Generation</h3>
+          <div class="matrix-wrap">
+            <table class="preference-matrix">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>LCV (Ours)</th>
+                  <th>Depth Only</th>
+                  <th>Optical Flow</th>
+                  <th>2D Bounding Boxes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>LCV (Ours)</th>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-mid" style="--matrix-alpha: 0.72">71.9%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.84">84.4%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 1.00">100.0%</td>
+                </tr>
+                <tr>
+                  <th>Depth Only</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.28">28.1%</td>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.41">40.6%</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.91">90.6%</td>
+                </tr>
+                <tr>
+                  <th>Optical Flow</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.16">15.6%</td>
+                  <td class="matrix-cell matrix-mid" style="--matrix-alpha: 0.59">59.4%</td>
+                  <td class="matrix-diagonal">-</td>
+                  <td class="matrix-cell matrix-high" style="--matrix-alpha: 0.88">87.5%</td>
+                </tr>
+                <tr>
+                  <th>2D Bounding Boxes</th>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.00">0.0%</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.09">9.4%</td>
+                  <td class="matrix-cell matrix-low" style="--matrix-alpha: 0.13">12.5%</td>
+                  <td class="matrix-diagonal">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
