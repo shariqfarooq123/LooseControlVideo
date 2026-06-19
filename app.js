@@ -53,6 +53,7 @@ function setupVideoGroup(groupEl) {
   videos.forEach((v) => {
     v.loop = true;
     v.autoplay = false;
+    v.muted = true; // required for programmatic inline playback on iOS
     v.pause();
   });
 
@@ -70,20 +71,23 @@ function setupVideoGroup(groupEl) {
   });
 
   let inView = false;
-  let firstStartDone = false;
+  let aligned = false;
 
   const play = () => {
     computeRates();
-    if (firstStartDone) {
-      videos.forEach((v) => v.play().catch(() => {}));
-      return;
-    }
-    // First start: align all to 0 and begin once every clip can play, so a
-    // slow-loading clip doesn't start the group out of sync.
+    // Always call play() first — this is what kicks off buffering. With
+    // preload="metadata", mobile browsers won't reach "canplay" until play()
+    // is invoked, so we must not wait for it beforehand (that deadlocks and
+    // leaves a black frame).
+    videos.forEach((v) => v.play().catch(() => {}));
+    if (aligned) return;
+
+    // Once every clip can actually play, snap them to 0 together for a synced
+    // start, then resume.
     let ready = 0;
     const onReady = () => {
-      if (++ready < videos.length || !inView) return;
-      firstStartDone = true;
+      if (++ready < videos.length || !inView || aligned) return;
+      aligned = true;
       videos.forEach((v) => { v.currentTime = 0; });
       videos.forEach((v) => v.play().catch(() => {}));
     };
