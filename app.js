@@ -39,38 +39,69 @@ document.querySelectorAll("[data-carousel]").forEach((carousel) => {
   update();
 });
 
-// Sync videos shown together: time-scale each clip via playbackRate so every
-// video in a group finishes in the same wall-clock time, then start them
-// together. With equal periods, the native loop keeps them aligned — no
-// per-frame seeking (which caused stutter).
-function syncVideoGroup(videos) {
-  if (videos.length < 2) return;
+// Play videos only while their group is on (or near) screen. Mobile devices
+// have very few hardware video decoders, so autoplaying every clip at once is
+// what makes the page lag — this keeps only the visible groups decoding.
+//
+// Within a group, each clip is time-scaled via playbackRate so they all finish
+// in the same wall-clock time; with equal periods the native loop keeps them
+// aligned without per-frame seeking.
+function setupVideoGroup(groupEl) {
+  const videos = Array.from(groupEl.querySelectorAll("video"));
+  if (!videos.length) return;
 
   videos.forEach((v) => {
     v.loop = true;
+    v.autoplay = false;
     v.pause();
   });
 
-  let started = false;
-  const tryStart = () => {
-    if (started) return;
-    if (!videos.every((v) => v.readyState >= 3 && v.duration)) return;
-    started = true;
-    const target = Math.max(...videos.map((v) => v.duration));
+  let target = null;
+  const computeRates = () => {
+    if (target || !videos.every((v) => v.duration)) return;
+    target = Math.max(...videos.map((v) => v.duration));
     videos.forEach((v) => {
       v.playbackRate = v.duration / target;
-      v.currentTime = 0;
     });
-    videos.forEach((v) => v.play().catch(() => {}));
+  };
+  videos.forEach((v) => {
+    if (v.duration) computeRates();
+    else v.addEventListener("loadedmetadata", computeRates, { once: true });
+  });
+
+  let inView = false;
+  let firstStartDone = false;
+
+  const play = () => {
+    computeRates();
+    if (firstStartDone) {
+      videos.forEach((v) => v.play().catch(() => {}));
+      return;
+    }
+    // First start: align all to 0 and begin once every clip can play, so a
+    // slow-loading clip doesn't start the group out of sync.
+    let ready = 0;
+    const onReady = () => {
+      if (++ready < videos.length || !inView) return;
+      firstStartDone = true;
+      videos.forEach((v) => { v.currentTime = 0; });
+      videos.forEach((v) => v.play().catch(() => {}));
+    };
+    videos.forEach((v) => {
+      if (v.readyState >= 3) onReady();
+      else v.addEventListener("canplay", onReady, { once: true });
+    });
   };
 
-  videos.forEach((v) => {
-    if (v.readyState >= 3 && v.duration) {
-      tryStart();
-    } else {
-      v.addEventListener("canplay", tryStart);
-    }
-  });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      inView = entries[0].isIntersecting;
+      if (inView) play();
+      else videos.forEach((v) => v.pause());
+    },
+    { rootMargin: "200px 0px", threshold: 0 }
+  );
+  observer.observe(groupEl);
 }
 
 // A sync group is a split-layout, or a leaf scene-block (one with no nested
@@ -83,9 +114,7 @@ const syncGroups = [
   ),
 ];
 
-syncGroups.forEach((group) => {
-  syncVideoGroup(Array.from(group.querySelectorAll("video")));
-});
+syncGroups.forEach(setupVideoGroup);
 
 document.querySelectorAll("[data-baseline-group]").forEach((group) => {
   const video = group.querySelector("[data-baseline-video]");
