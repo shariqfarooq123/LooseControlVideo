@@ -26,7 +26,7 @@ body {
     radial-gradient(circle at top left, rgba(123, 103, 72, 0.06), transparent 28rem),
     linear-gradient(180deg, #fbf9f4 0%, var(--bg) 100%);
   font-family:
-    "Source Sans 3",
+    "Inter",
     "Avenir Next",
     "Segoe UI",
     sans-serif;
@@ -40,7 +40,7 @@ body {
 }
 
 .paper-header {
-  padding: 0 0 3rem;
+  padding: 0 0 1.4rem;
   text-align: center;
 }
 
@@ -74,16 +74,16 @@ body {
 }
 
 .paper-title {
-  max-width: 24ch;
   margin: 0 auto;
   font-family:
-    "Newsreader",
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+    "Inter",
+    "Avenir Next",
+    "Segoe UI",
+    sans-serif;
   line-height: 1;
   letter-spacing: -0.02em;
   font-weight: 500;
+  text-wrap: balance;
 }
 
 .paper-title-main,
@@ -129,17 +129,52 @@ body {
   outline: none;
 }
 
-@media (min-width: 1200px) {
-  .paper-title {
-    max-width: 28ch;
-  }
+.paper-authors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.4rem;
+  margin: 1.5rem 0 0;
+  font-size: 1.18rem;
+  font-weight: 500;
 }
 
-.paper-meta {
-  margin: 0.55rem 0 0;
+.author {
+  position: relative;
+  color: #2563c9;
+  text-decoration: none;
+  padding-bottom: 1px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.author:hover,
+.author:focus-visible {
+  color: #1d4ea3;
+  border-bottom-color: #1d4ea3;
+  outline: none;
+}
+
+.paper-affil {
+  margin: 0.7rem 0 0;
   color: var(--muted);
-  font-size: 1.02rem;
-  line-height: 1.5;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.paper-venue {
+  display: block;
+  width: fit-content;
+  margin: 0.85rem auto 0;
+  padding: 0.22rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.86);
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .teaser-caption {
@@ -243,15 +278,17 @@ body {
 
 .section:first-of-type {
   border-top: 0;
+  padding-top: 0.75rem;
+  margin-top: 0;
 }
 
 .section-title {
   margin: 0 0 0.45rem;
   font-family:
-    "Newsreader",
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+    "Inter",
+    "Avenir Next",
+    "Segoe UI",
+    sans-serif;
   font-size: clamp(1.8rem, 2.4vw, 2.65rem);
   line-height: 1.05;
   letter-spacing: -0.02em;
