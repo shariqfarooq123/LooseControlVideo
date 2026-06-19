@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LooseControlVideo Supplementary Material</title>
+    <title>LooseControlVideo Project Page</title>
     <meta
       name="description"
-      content="Supplementary material for LooseControlVideo: Directorial Video Control using Spatial Blocking."
+      content="Project page for LooseControlVideo: Directorial Video Control using Spatial Blocking."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,7 +29,26 @@
           <a href="https://scholar.google.com/citations?user=j7uL6VEAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Kalyan Sunkavalli</a>
         </p>
         <p class="paper-meta">Adobe Research</p>
+        <p class="paper-meta">ECCV 2026</p>
+        <div class="paper-links">
+          <a class="paper-link-btn" href="https://arxiv.org/pdf/2606.19495" target="_blank" rel="noopener noreferrer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+            PDF
+          </a>
+          <a class="paper-link-btn" href="https://arxiv.org/abs/2606.19495" target="_blank" rel="noopener noreferrer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.37 5.18 8.89 11.1l4.93 6.72H11.1L7.5 12.87l-4.03 4.95H1.73l5.2-6.38L2.1 5.18h2.87l3.3 4.52 3.73-4.52h1.37zm1.27 0h2.59l-5.2 6.44 5.47 6.28h-2.62l-4.14-4.76-.6.72 4.5 4.04zm-5.3 0z"/></svg>
+            arXiv
+          </a>
+<a class="paper-link-btn" href="#bibtex">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 17h3l2-4H7V7H3v6h3zm8 0h3l2-4h-4V7h-4v6h3z"/></svg>
+            BibTeX
+          </a>
+        </div>
       </header>
+
+      <section class="section" id="tldr">
+        <p class="tldr-text"><strong>TL;DR</strong> &nbsp;We present LooseControlVideo (LCV), a framework for controlling video generation and editing using sparse, oriented 3D boxes. Unlike dense depth maps, optical flow or 3D point tracks, 3D boxes are easy to draw by hand, giving users a simple yet expressive interface to creatively direct object trajectories, rotations, occlusions, and camera motion.</p>
+      </section>
 
       <section class="section" id="teaser">
         <div class="scene-block">
@@ -69,7 +88,7 @@
       </section>
 
       <section class="section" id="abstract">
-        <details class="abstract-block">
+        <details class="abstract-block" open>
           <summary class="abstract-title">Abstract</summary>
           <p class="abstract-text">
             Precise 3D spatial orchestration in text-to-video generation remains a significant challenge,
@@ -813,6 +832,19 @@
             </table>
           </div>
         </div>
+      </section>
+
+      <section class="section" id="bibtex">
+        <h2 class="section-title">Citation</h2>
+        <pre class="bibtex-block">@misc{bhat2026loosecontrolvideodirectorialvideocontrol,
+      title={LooseControlVideo: Directorial Video Control using Spatial Blocking},
+      author={Shariq Farooq Bhat and Niloy J. Mitra and Kalyan Sunkavalli},
+      year={2026},
+      eprint={2606.19495},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2606.19495},
+}</pre>
       </section>
     </main>
 
